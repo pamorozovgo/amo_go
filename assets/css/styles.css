@@ -1,0 +1,94 @@
+body {
+    background-color: #2290cf;
+}
+.header{
+    border-bottom: 2px solid black;
+
+    width: 100%;
+    height: 10%;
+    margin-bottom: 10px;
+}
+
+.nav_item{
+    align-content: stretch;
+    font-size: 24pt;
+    padding: 1px 5px 6px;
+    font-weight: 500;
+    font-style: italic;
+    display: inline;
+}
+
+a{
+    color: white;
+    text-decoration: none;
+}
+
+.oneBotton{
+    font-size: 15px;
+    font-weight:bold;
+    margin-right: 50px;
+    padding: 11px 17px 9px 16px;
+    position: relative;
+    display: inline-block;
+    border: 1px solid #fcfcfc;
+    background: #fcfcfc;
+    color: #4c8bf7;
+    border-radius: 3px;
+    vertical-align: middle;
+    max-height: 38px;
+    line-height: 14px;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.counter_buttons {
+    height: 40px;
+    padding-top:35px;
+    padding-left:65px;
+}
+
+#result{
+    font-family: Helvetica, sans-serif;
+    padding-top: 35px;
+    padding-left: 110px;
+    font-size: 18px;
+    color: white;
+}
+
+.animated {
+    padding-top:95px;
+    margin-bottom:60px;
+    -webkit-animation-duration: 3s;
+    animation-duration: 3s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+@-webkit-keyframes bounceOutUp {
+    0% {
+        -webkit-transform: translateY(-140px) translateX(179px);
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(-400px) translateX(2800px);
+    }
+}
+
+@keyframes bounceOutUp {
+    0% {
+        transform: translateY(-140px) translateX(179px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(-400px) translateX(280px);
+    }
+}
+
+.textOut {
+    position: absolute;
+    color: white;
+    -webkit-animation-name: bounceOutUp;
+    animation-name: bounceOutUp;
+}
