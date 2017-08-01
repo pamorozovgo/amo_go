@@ -8,46 +8,88 @@ import (
 	"github.com/codegangsta/martini"
 	"github.com/martini-contrib/render"
 	"net/http"
-
-	"sync"
+	"runtime"
 )
 
 
 /**
- * Наша структура счетчика, содержащая само значение счетчика и шаг прибавления
+ * Наша структура счетчика, содержащая само значение счетчика и шаг прибавления,
+ * а также каналы под изменение счетчика и получение текущего значения
  */
 type Counter struct {
-	counterMutex *sync.Mutex `json:"-"`
-	Value int `json:"value"`
-	Step int `json:"step"`
+	value 			int
+	Step 			int `json:"step"`
+	addChan 		chan int
+	curCountChan 	chan int
 }
 
 /**
  * Получение текущего значение счетчика
  */
 func (c *Counter) get() int {
-	c.counterMutex.Lock()
-	defer c.counterMutex.Unlock()
-
-	return c.Value
+	return <-c.curCountChan
 }
 
 /**
  * Инкремент счетчика
  */
-func (c *Counter) add() int {
-	c.counterMutex.Lock()
-	c.Value += c.Step
-	c.counterMutex.Unlock()
-
-	return c.Value
+func (c *Counter) add() {
+	c.addChan <-c.Step
 }
 
+/**
+ * Применение изменений счетчика
+ */
+func (c *Counter) apply(step int) {
+	fmt.Println("Прибавляем ", step)
+
+	c.value += step
+}
+
+
+/**
+ * Создание нового счетчика
+ */
+func NewCounter(step int) (c *Counter) {
+	c = &Counter{
+		value:			0,
+		Step:			step,
+		addChan: 		make(chan int),
+		curCountChan:	make(chan int),
+	}
+
+	go c.run()
+
+	return
+}
+
+/**
+ * Бесконечный цикл-обработчик изменений значения счетчика и получения текущего значения
+ */
+func (c *Counter) run() {
+	//Единожды инициализируем переменную для хранения шага счетчика
+	var step int
+	for {
+		select {
+			//При увеличении счетчика с канала приходит шаг изменения счетчика
+			case step = <-c.addChan:
+				c.apply(step)
+			case c.curCountChan <- c.value:
+				//в case`е уже записали значение текущего счетчика в канал
+				fmt.Println(`Текущее значение счетчика`, c.value)
+		}
+		//Даю возможность runtime`у свободно переключаться между потоками без опасений блокировок
+		runtime.Gosched()
+	}
+
+}
 
 func main() {
 	fmt.Println("Start on localhost:3000")
 
-	var C = Counter{new(sync.Mutex), 0, 1}
+	// Объявляю счетчик, который сразу будет обрабатывать данные с каналов
+	var c = NewCounter(1)
+
 	m := martini.Classic()
 
 	m.Use(render.Renderer(render.Options{
@@ -66,23 +108,18 @@ func main() {
 
 	//Обработчик post запросов на увеличение значения счетчика
 	m.Post("/add", func () int {
-		C.add()
-		fmt.Println(C.get())
+		c.add()
 
 		return http.StatusOK
 	})
 
 	//Обработчик вывода значения счетчика
 	m.Get("/show", func (rnd render.Render) {
-		count := C.get()
-
-		if count >= 0 {
-			to_json, err := json.Marshal(count)
-			if err != nil {
-				fmt.Println(err)
-			}
-			rnd.Data(200, to_json)
+		to_json, err := json.Marshal(c.get())
+		if err != nil {
+			fmt.Println(err)
 		}
+		rnd.Data(200, to_json)
 	})
 
 	m.Run()

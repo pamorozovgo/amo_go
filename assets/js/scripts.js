@@ -9,10 +9,12 @@ function init() {
 function add_one() {
     $('#counterButtons')
         .append('<div id="counter" class="animated textOut">+1</div>');
-    $('#counter')
-        .attr("id", 'counter' + i);
-//            $('#counter'+i).hide();
-    $('#counter'+i).fadeIn(1000).fadeOut(2000, function(){$(this).remove()});
+    $('#counter').attr("id", 'counter' + i);
+    $('#counter'+i)
+        .fadeIn(1000)
+        .fadeOut(2000, function() {
+            $(this).remove()
+        });
 
     $.ajax({
         url: '/add',
