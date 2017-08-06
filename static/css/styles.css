@@ -72,7 +72,7 @@ a{
     }
     100% {
         opacity: 1;
-        -webkit-transform: translateY(-400px) translateX(2800px);
+        -webkit-transform: translateY(-400px) translateX(280px);
     }
 }
 
