@@ -1,8 +1,8 @@
 package main
 
 import (
-	. "./models"
 	"./controllers"
+	. "./models"
 	"fmt"
 
 	"github.com/astaxie/beego"
@@ -10,14 +10,12 @@ import (
 	"net/http"
 )
 
-
 func main() {
 	fmt.Println("Start on localhost:8080")
 
 	//beego controller
 	bController := new(controllers.MainController)
 
-	// Объявляю счетчик, который сразу будет обрабатывать данные с каналов
 	var c = NewCounter(1)
 
 	// Запросы на корень сайта обрабатывает IndexHandler c помощью martini

@@ -13,7 +13,7 @@ func (m *MainController) Index() {
 	m.TplName = "templates/layout.html"
 }
 
-func (m *MainController) Show(counter *Counter) int {
+func (m *MainController) Show(counter *Counter) uint64 {
 	return counter.Get()
 }
 
